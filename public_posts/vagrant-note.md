@@ -1,4 +1,8 @@
-
+```
+Title:   vagrant-note
+Author:  Xiaoxue Wang<xxwjoy@hotmail.com>
+Date:    2019-04-22
+```
 
 # Vagrant Notes
 
@@ -227,9 +231,3 @@ $ vagrant up                   <-- the changes above are inside this box.
     3 directories, 7 files
     ```
 
-
-```
-Title:   vagrant-note
-Author:  Xiaoxue Wang<xxwjoy@hotmail.com>
-Date:    2019-04-22
-```
