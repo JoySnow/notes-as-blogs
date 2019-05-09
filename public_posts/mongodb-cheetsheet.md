@@ -20,6 +20,7 @@ Versions:
 		* [How to delete a db in MongoDB ?](#how-to-delete-a-db-in-mongodb)
 	* [How to manipulate it via Python ?](#how-to-manipulate-it-via-python)
 	* [Mongo DB has no "show all" command.](#mongo-db-has-no-show-all-command)
+	* [Set MongoDB server to allow remote connection](#set-mongodb-server-to-allow-remote-connection)
 
 <!-- /code_chunk_output -->
 
@@ -127,78 +128,7 @@ switched to db taoism
 			"ns" : "taoism.activities"
 		}
 	},
-	{
-		"name" : "openshift",
-		"type" : "collection",
-		"options" : {
-
-		},
-		"info" : {
-			"readOnly" : false
-		},
-		"idIndex" : {
-			"v" : 2,
-			"key" : {
-				"_id" : 1
-			},
-			"name" : "_id_",
-			"ns" : "taoism.openshift"
-		}
-	},
-	{
-		"name" : "proactiveissues",
-		"type" : "collection",
-		"options" : {
-
-		},
-		"info" : {
-			"readOnly" : false
-		},
-		"idIndex" : {
-			"v" : 2,
-			"key" : {
-				"_id" : 1
-			},
-			"name" : "_id_",
-			"ns" : "taoism.proactiveissues"
-		}
-	},
-	{
-		"name" : "reviewedkcs",
-		"type" : "collection",
-		"options" : {
-
-		},
-		"info" : {
-			"readOnly" : false
-		},
-		"idIndex" : {
-			"v" : 2,
-			"key" : {
-				"_id" : 1
-			},
-			"name" : "_id_",
-			"ns" : "taoism.reviewedkcs"
-		}
-	},
-	{
-		"name" : "tracktrellos",
-		"type" : "collection",
-		"options" : {
-
-		},
-		"info" : {
-			"readOnly" : false
-		},
-		"idIndex" : {
-			"v" : 2,
-			"key" : {
-				"_id" : 1
-			},
-			"name" : "_id_",
-			"ns" : "taoism.tracktrellos"
-		}
-	},
+  ...
 	{
 		"name" : "users",
 		"type" : "collection",
@@ -234,7 +164,7 @@ for (var col in col_list) { print (col_list[col]) ; }
 Simple describe version:
 ```bash
 # get a item as an example:
-> var col_list= db.proactiveissues.findOne();
+> var col_list= db.issues.findOne();
 # print the keys:
 > for (var col in col_list) { print (col) ; }
 # print values:
@@ -343,20 +273,18 @@ mycol = mydb["collection-name"]
 query_condition_filter = {}
 query_return_filter = {
     "id": 1,
-    "reviewState": 1,
-    "kcsState": 1,
-    "lastReviewedBy": 1,
+    "reviewedBy": 1,
     "sbr": 1,
     }
 
 # This following query pramas are used like(meaning):
 #    select <query_return_filter> from mycol where query_condition_filter
-reviewed_kcs_cursor = mycol.find(query_condition_filter, query_return_filter)
+reviewed_cursor = mycol.find(query_condition_filter, query_return_filter)
 
-reviewed_kcs_info = list(reviewed_kcs_cursor)
+reviewed_info = list(reviewed_cursor)
 
-print(len(reviewed_kcs_info))
-for x in reviewed_kcs_info:
+print(len(reviewed_info))
+for x in reviewed_info:
   print(x)
 ```
 
@@ -372,3 +300,50 @@ In MongoDB, it is not as straightforward. You have to know what you want to look
 
  - To get the configuration file that the current MongoDB instance is using, use `db.serverCmdLineOpts();` .
  - To get the current server parameters, use `db.runCommand( { getParameter : '*' } )` against the admin database in any replica set .
+
+
+## Set MongoDB server to allow remote connection
+https://ianlondon.github.io/blog/mongodb-auth/
+
+1. Set up a user
+
+```
+> db.createUser(
+...   {
+...     user: "taoism-reader",
+...     pwd: "12345678",
+...     roles: [
+...        { role: "read", db: "taoism" }
+...     ]
+...   }
+... )
+Successfully added user: {
+	"user" : "taoism-reader",
+	"roles" : [
+		{
+			"role" : "read",
+			"db" : "taoism"
+		}
+	]
+}
+>
+```
+
+2. Enable auth and open MongoDB access up to all IPs
+
+```
+vi /etc/mongod.conf
+
+# network interfaces
+net:
+  port: 27017
+#  bindIp: 127.0.0.1  <- comment out this line
+...
+security:                     <- un-comment out this line
+  authorization: 'enabled'    <- un-comment out this line
+```
+
+3. Restart mongod.service
+`# service mongod restart`
+
+4. Check for firewall, to let mongod pass.
