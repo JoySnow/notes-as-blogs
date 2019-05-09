@@ -2,11 +2,29 @@
 Title:   vagrant-note
 Author:  Xiaoxue Wang<xxwjoy@hotmail.com>
 Date:    2019-04-22
+Modify:  2019-05-09
 ```
 
+
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+<!-- code_chunk_output -->
+
+* [Vagrant Notes](#vagrant-notes)
+	* [Vagrantfile](#vagrantfile)
+		* [primary function of the Vagrantfile](#primary-function-of-the-vagrantfile)
+		* [lookup order](#lookup-order)
+		* [Load Order and Merging](#load-order-and-merging)
+	* [How to package your changes to a box and distribute it?](#how-to-package-your-changes-to-a-box-and-distribute-it)
+		* [Package with `vagrant box repackage`, not work(without changes).](#package-with-vagrant-box-repackage-not-workwithout-changes)
+		* [Package with `vagrant package`, works(with changes).](#package-with-vagrant-package-workswith-changes)
+		* [Package a box with vagrantfile](#package-a-box-with-vagrantfile)
+	* [Box Management](#box-management)
+		* [update box version (for box from repo)](#update-box-version-for-box-from-repo)
+
+<!-- /code_chunk_output -->
+
+
 # Vagrant Notes
-
-
 
 ## Vagrantfile
 https://www.vagrantup.com/docs/vagrantfile/
@@ -176,7 +194,7 @@ $ vagrant up                   <-- the changes above are inside this box.
 ### Package a box with vagrantfile
 
 1. Example vagrantfile to package:
-    
+
     ```
     # -*- mode: ruby -*-
     # vi: set ft=ruby :
@@ -199,7 +217,7 @@ $ vagrant up                   <-- the changes above are inside this box.
         false
       end
     end
-    
+
     VagrantPlugins::Registration::Plugin.guest_capability 'redhat', 'subscription_manager_registered?' do
       SubscriptionManagerMonkeyPatches
     end
@@ -212,7 +230,7 @@ $ vagrant up                   <-- the changes above are inside this box.
     ```
 
 3. After `box add`, the `Vagrantfile-rhsm-patch` is `include/_Vagrantfile`.
-    
+
     ```
     ╭[dhcp-137-117] ~/.vagrant.d/boxes
     ╰> tree rhel8-box
@@ -227,7 +245,40 @@ $ vagrant up                   <-- the changes above are inside this box.
             ├── metadata.json
             ├── Vagrantfile
             └── vagrant_private_key
-    
+
     3 directories, 7 files
     ```
 
+
+------------------------------------
+## Box Management
+
+### update box version (for box from repo)
+https://www.vagrantup.com/docs/cli/box.html#box-update
+
+`vagrant box update --box roboxes/rhel8 --provider virtualbox --insecure`
+
+`--insecure` for some broken download.
+
+When failed with following error, retry the update command.
+**Seems** it can benifit from the last broken download data.
+
+```
+╰> vagrant box update --box roboxes/rhel8 --provider virtualbox
+Checking for updates to 'roboxes/rhel8'
+Latest installed version: 1.9.6
+Version constraints: > 1.9.6
+Provider: virtualbox
+Updating 'roboxes/rhel8' with provider 'virtualbox' from version
+'1.9.6' to '1.9.12'...
+Loading metadata for box 'https://vagrantcloud.com/roboxes/rhel8'
+Adding box 'roboxes/rhel8' (v1.9.12) for provider: virtualbox
+Downloading: https://vagrantcloud.com/roboxes/boxes/rhel8/versions/1.9.12/providers/virtualbox.box
+Download redirected to host: vagrantcloud-files-production.s3.amazonaws.com
+An error occurred while downloading the remote file. The error
+message, if any, is reproduced below. Please fix this error and try
+again.
+
+OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 104
+╰> vagrant box update --box roboxes/rhel8 --provider virtualbox --insecure
+```
