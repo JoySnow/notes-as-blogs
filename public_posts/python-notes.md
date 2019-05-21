@@ -70,6 +70,48 @@ list, tuple, dict, set
 
 ##### collections.namedtuple(typename, field_names, *, rename=False, defaults=None, module=None)
 
+
+https://docs.python.org/3/library/collections.html
+
+`Returns a new tuple subclass named typename.`
+
+`Named tuple instances do not have per-instance dictionaries`(Joy: defined `__solts__`), so they are `lightweight and require no more memory than regular tuples.`
+
+
+##### collections.OrderedDict([items])
+
+OrderedDict is implied with a circular doubly linked list.
+
+Big-O running times for all methods are the same as regular dictionaries.
+
+
+ - Usage: `implementing variants of functools.lru_cache()`
+ ```
+ class LRU(OrderedDict):
+    'Limit size, evicting the least recently looked-up key when full'
+
+    def __init__(self, maxsize=128, *args, **kwds):
+        self.maxsize = maxsize
+        super().__init__(*args, **kwds)
+
+    def __getitem__(self, key):
+        value = super().__getitem__(key)
+        self.move_to_end(key)
+        return value
+
+    def __setitem__(self, key, value):
+        super().__setitem__(key, value)
+        if len(self) > self.maxsize:
+            oldest = next(iter(self))
+            del self[oldest]
+  ```
+
+### TODO: https://docs.python.org/3/library/functools.html#functools.lru_cache
+
+Example of efficiently computing Fibonacci numbers using a cache to implement a dynamic programming technique:
+
+
+
 ##TODO: read code at https://github.com/python/cpython/blame/3.7/Lib/collections/__init__.py#L316
 
 Test at https://github.com/python/cpython/blob/master/Lib/test/test_collections.py .
@@ -90,6 +132,10 @@ Person(name='kh', age=2, gender='f')
 ```
 
 #### Queue.Queue
+
+
+
+##### collections.namedtuple(typename, field_names, *, rename=False, defaults=None, module=None)
 
 
 ## 推导式与函数式
