@@ -19,8 +19,14 @@ Versions:
 		* [How to describe a collection's schema in MongoDB?](#how-to-describe-a-collections-schema-in-mongodb)
 		* [How to delete a db in MongoDB ?](#how-to-delete-a-db-in-mongodb)
 	* [How to manipulate it via Python ?](#how-to-manipulate-it-via-python)
+		* [Query](#query)
+		* [Write](#write)
 	* [Mongo DB has no "show all" command.](#mongo-db-has-no-show-all-command)
 	* [Set MongoDB server to allow remote connection](#set-mongodb-server-to-allow-remote-connection)
+	* [Access control](#access-control)
+		* [Create a user for db products .](#create-a-user-for-db-products)
+		* [Admin Roles (built-in-roles)](#admin-roles-built-in-roles)
+		* [Collection-level access control -  Privileges way](#collection-level-access-control-privileges-way)
 
 <!-- /code_chunk_output -->
 
@@ -261,6 +267,7 @@ test       0.23012GB
 
 ## How to manipulate it via Python ?
 
+### Query
 https://docs.mongodb.com/manual/tutorial/query-documents/
 https://docs.mongodb.com/manual/reference/command/listDatabases/
 https://docs.mongodb.com/manual/tutorial/project-fields-from-query-results/
@@ -287,6 +294,13 @@ print(len(reviewed_info))
 for x in reviewed_info:
   print(x)
 ```
+
+### Write
+
+https://api.mongodb.com/python/current/api/pymongo/collection.html#pymongo.collection.Collection.insert_one
+
+
+
 
 ## Mongo DB has no "show all" command.
 https://newbiedba.wordpress.com/2016/06/01/mongodb-101-tips-how-to-view-current-configuration-on-a-running-system/
@@ -331,7 +345,7 @@ Successfully added user: {
 
 2. Enable auth and open MongoDB access up to all IPs
 
-```
+```bash
 vi /etc/mongod.conf
 
 # network interfaces
@@ -347,3 +361,62 @@ security:                     <- un-comment out this line
 `# service mongod restart`
 
 4. Check for firewall, to let mongod pass.
+
+
+
+
+## Access control
+
+### Create a user for db products .
+
+```bash
+use products
+db.createUser(
+   {
+     user: "accountUser",
+     pwd: "password",
+     roles: [ { role: "readWrite", db: "products" }, ]
+   }
+)
+```
+
+This need to connect with:
+```Python
+  # Require /products, since 'accountUser' is grunted under 'products'.
+  myclient = pymongo.MongoClient("mongodb://accountUser:password@localhost:27017/products")
+
+  mydb = myclient["products"]
+  mycol = mydb["reviewedkcs"]
+```
+
+https://docs.mongodb.com/v3.4/reference/method/db.createUser/
+
+
+### Admin Roles (built-in-roles)
+**dbOwner** could cover both `dbAdmin` and `userAdmin`.
+
+https://docs.mongodb.com/manual/reference/built-in-roles/
+
+
+### Collection-level access control -  Privileges way
+
+https://docs.mongodb.com/manual/core/collection-level-access-control/
+
+```bash
+db.createRole(
+   {
+     role: "abcReader",
+     privileges: [
+       { resource: { db: "products", collection: "abc" }, actions: [ "find",] },
+     ],
+     roles: [  ]
+   }
+)
+
+db.createUser(
+   {
+     user: "abcReaderUser",
+     pwd: "redhat",
+     roles: [ { role: "abcReader", db: "products" } ],
+   })
+```
