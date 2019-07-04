@@ -31,9 +31,6 @@
 Refer to:
 - https://www.laurentluce.com/posts/python-dictionary-implementation/
 - https://docs.python.org/3/c-api/dict.html
-
-
-
 - http://pybites.blogspot.com/2008/10/pure-python-dictionary-implementation.html
 
 All analysis are based on py3.7's source code:
