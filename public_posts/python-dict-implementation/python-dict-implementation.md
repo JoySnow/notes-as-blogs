@@ -53,7 +53,7 @@ All analysis are based on py3.7's source code:
 
 ```
 For each key:
-    hash_func(key) => index => list[index]
+    hash_func(key) => hash => index => list[index]
 ```
 
 `hash_func` matters.  
@@ -69,15 +69,13 @@ For each key:
 ## Open addressing
 
 ### How python find a free slot?
-```
+```c
 j = (5*j) + 1 + perturb;
 perturb >>= PERTURB_SHIFT;
 use j % 2**i as the next table index;
 ```
-- j: index
-- perturb: a variable
-- PERTURB_SHIFT: define as 5 in python
-- 2**i: is the current length of list.
+- `j` is the `table index`.
+- Use current `j` to get a new `j`.
 
 The example of collision:
  - Use linked list. Increase lookup time, ( > O(1) )
@@ -85,12 +83,20 @@ The example of collision:
 
 
 ### Check dictobject.c#L134 for collision-resolution
-https://github.com/python/cpython/blame/3.7/Objects/dictobject.c#L134
-
 > In open addressing, when a data item can't be placed at the index calculated by the hash function, another location in the array is sought.
 在开放地址法中，若数据不能直接放在由哈希函数计算出来的数组下标所指的单元时，就要寻找数组的其他位置。
 
-Trying to understand ...
+```c
+perturb >>= PERTURB_SHIFT;
+j = (5*j) + 1 + perturb;
+use j % 2**i as the next table index;
+```
+- `j`: index
+- `perturb`: a variable
+- `PERTURB_SHIFT`: define as 5 in python
+- `2**i`: is the current length of list.
+
+Trying to understand ... Refer to https://github.com/python/cpython/blame/3.7/Objects/dictobject.c#L134
 
 1. **First half of collision resolution**: visit table indices via this recurrence:
   `j = ((5*j) + 1) mod 2**i`
@@ -103,13 +109,15 @@ Trying to understand ...
 	  	0 -> 1 -> 6 -> 7 -> 4 -> 5 -> 2 -> 3 -> 0 [and here it's repeating]
 		```
 
-2. **The other half of the strategy**: To get the other bits of the hash code into play.
-    This is done by initializing a (unsigned) `variable "perturb"` to the full hash code, and changing the recurrence to:
-		```
-		perturb >>= PERTURB_SHIFT;
-    j = (5*j) + 1 + perturb;
-    use j % 2**i as the next table index;
-		```
+2. **The other half of the strategy**: To get the other bits of the hash code into play.  
+    `j = ((5*j) + 1 + perturb) mod 2**i`
+    This is done by initializing a (unsigned) `variable "perturb"` to the full hash code, and changing the recurrence to:   
+
+  ```c
+  perturb >>= PERTURB_SHIFT;
+  j = (5*j) + 1 + perturb;
+  use j % 2**i as the next table index;
+  ```
 
 3. `PERTURB_SHIFT = 5` is tested and a good choice as said.
 
