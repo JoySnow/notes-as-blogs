@@ -19,6 +19,7 @@
     - [ Call `find_empty_slot` in `insertdict`](#call-find_empty_slot-in-insertdict)
     - [ Call `dk_get_index` in `find_empty_slot`](#call-dk_get_index-in-find_empty_slot)
       - [ DKIX_EMPTY and DKIX_DUMMY](#dkix_empty-and-dkix_dummy)
+    - [ Summarize the logic](#summarize-the-logic)
   - [ Removing items](#removing-items)
     - [ Note:](#note)
 
@@ -133,7 +134,7 @@ https://github.com/python/cpython/blob/3.7/Objects/dictobject.c#L104
 https://github.com/python/cpython/blob/3.7/Objects/dictobject.c#L104
 https://github.com/python/cpython/blob/3.7/Objects/dictobject.c#L374
 
-- Growth rate upon hitting maximum load: used*3 for py3.7
+- Growth rate upon hitting maximum load: `used*3` for py3.7
 `#define GROWTH_RATE(d) ((d)->ma_used*3)`  <-- double in size: 2/3 * 3
 https://github.com/python/cpython/blob/3.7/Objects/dictobject.c#L400
 	```
@@ -178,17 +179,14 @@ layout:
 | dk_usable     |   <-- Number of usable entries in dk_entries.
 | dk_nentries   |   <-- Number of used entries in dk_entries.
 +---------------+
-| dk_indices    |   <-- actual hashtable, It holds index in entries,
-|               |       like <hash-value, index>
+| dk_indices    |   <-- actual a hashtable (list), It holds index of entries,
+|               |       list index is converted from hash-value
 +---------------+
 | dk_entries    |   <-- array of PyDictKeyEntry
 |               |
 +---------------+
 */
 ```
-
-
-
 
 
 ## Dictionary initialization
@@ -237,6 +235,7 @@ find_empty_slot(PyDictKeysObject *keys, Py_hash_t hash)
 }
 ```
 
+
 ### Call `dk_get_index` in `find_empty_slot`
 https://github.com/python/cpython/blob/3.7/Objects/dictobject.c#L313
 ```c
@@ -259,6 +258,16 @@ dk_size == 256.
 */
 ```
 `DKIX_EMPTY` is for empty, and `DKIX_DUMMY` is for used before, but deleted.
+
+### Summarize the logic
+
+```c
+hash(key) => hash
+hash & mask => i
+dk_indices[i] => ix
+Once ix >= 0:
+   dx_extries[ix] => the target entry
+```
 
 
 
