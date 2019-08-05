@@ -9,24 +9,26 @@ Versions:
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 <!-- code_chunk_output -->
 
-* [MongoDB cheetsheet](#mongodb-cheetsheet)
-	* [MongoDB dump & restore](#mongodb-dump-restore)
-		* [MongoDB dump & restore -- default format](#mongodb-dump-restore-default-format)
-		* [Dump/Restore collections with mongoexport/mongoimport in JSON format](#dumprestore-collections-with-mongoexportmongoimport-in-json-format)
-		* [How to restore a db with dump file (gzip) ?](#how-to-restore-a-db-with-dump-file-gzip)
-	* [MongoDB Shell Usage](#mongodb-shell-usage)
-		* [How to gather the db, collection names ?](#how-to-gather-the-db-collection-names)
-		* [How to describe a collection's schema in MongoDB?](#how-to-describe-a-collections-schema-in-mongodb)
-		* [How to delete a db in MongoDB ?](#how-to-delete-a-db-in-mongodb)
-	* [How to manipulate it via Python ?](#how-to-manipulate-it-via-python)
-		* [Query](#query)
-		* [Write](#write)
-	* [Mongo DB has no "show all" command.](#mongo-db-has-no-show-all-command)
-	* [Set MongoDB server to allow remote connection](#set-mongodb-server-to-allow-remote-connection)
-	* [Access control](#access-control)
-		* [Create a user for db products .](#create-a-user-for-db-products)
-		* [Admin Roles (built-in-roles)](#admin-roles-built-in-roles)
-		* [Collection-level access control -  Privileges way](#collection-level-access-control-privileges-way)
+- [ MongoDB cheetsheet](#mongodb-cheetsheet)
+  - [ MongoDB dump & restore](#mongodb-dump-restore)
+    - [ MongoDB dump & restore -- default format](#mongodb-dump-restore-default-format)
+    - [ Dump/Restore collections with mongoexport/mongoimport in JSON format](#dumprestore-collections-with-mongoexportmongoimport-in-json-format)
+    - [ How to restore a db with dump file (gzip) ?](#how-to-restore-a-db-with-dump-file-gzip)
+  - [ MongoDB Shell Usage](#mongodb-shell-usage)
+    - [ db.auth](#dbauth)
+    - [ How to gather the db, collection names ?](#how-to-gather-the-db-collection-names)
+    - [ How to describe a collection's schema in MongoDB?](#how-to-describe-a-collections-schema-in-mongodb)
+    - [ How to delete a db in MongoDB ?](#how-to-delete-a-db-in-mongodb)
+    - [ Use aggregate](#use-aggregate)
+  - [ How to manipulate it via Python ?](#how-to-manipulate-it-via-python)
+    - [ Query](#query)
+    - [ Write](#write)
+  - [ Mongo DB has no "show all" command.](#mongo-db-has-no-show-all-command)
+  - [ Set MongoDB server to allow remote connection](#set-mongodb-server-to-allow-remote-connection)
+  - [ Access control](#access-control)
+    - [ Create a user for db products .](#create-a-user-for-db-products)
+    - [ Admin Roles (built-in-roles)](#admin-roles-built-in-roles)
+    - [ Collection-level access control -  Privileges way](#collection-level-access-control-privileges-way)
 
 <!-- /code_chunk_output -->
 
@@ -80,6 +82,22 @@ $ mongorestore -d taoism /tmp/taoism
 
 
 ## MongoDB Shell Usage
+
+
+### db.auth
+
+```
+# mongo
+MongoDB shell version v3.4.15
+connecting to: mongodb://127.0.0.1:27017
+MongoDB server version: 3.4.15
+> use taoism
+switched to db taoism
+> db.auth('username', 'password');
+1
+> db.getCollectionInfos();
+...
+```
 
 ### How to gather the db, collection names ?
 
@@ -263,6 +281,22 @@ local      0.78125GB
 test       0.23012GB
 >
 ```
+
+### Use aggregate
+```
+db.resourcecollection.aggregate(
+      { $match: { resourceType: "kcs" } },
+      { $group: { _id: "$resourceId",
+                  total: { $sum: 1 }}
+      },
+      { $sort: { total: -1 } }
+)
+{ "_id" : "123", "total" : 3 }
+{ "_id" : "456", "total" : 3 }
+{ "_id" : "789", "total" : 2 }
+... 
+```
+Refer to https://docs.mongodb.com/manual/reference/method/db.collection.aggregate/
 
 
 ## How to manipulate it via Python ?
