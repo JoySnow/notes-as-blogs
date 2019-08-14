@@ -294,9 +294,14 @@ db.resourcecollection.aggregate(
 { "_id" : "123", "total" : 3 }
 { "_id" : "456", "total" : 3 }
 { "_id" : "789", "total" : 2 }
-... 
+...
 ```
 Refer to https://docs.mongodb.com/manual/reference/method/db.collection.aggregate/
+
+
+```
+db.orders.aggregate([{ $group: { _id: "$resourceType", total: { $sum: 1 } } }])
+```
 
 
 ## How to manipulate it via Python ?
