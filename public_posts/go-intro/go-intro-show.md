@@ -37,9 +37,9 @@ https://golang.org/doc/
 
 ## * Learning Go's basic grammar
 
-Online: https://tour.golang.org/
-Local: http://127.0.0.1:3999/welcome/1
-Refer to ./go-tour-locally-setup.md .
+Online: https://tour.golang.org/   
+Local: http://127.0.0.1:3999/welcome/1    
+Refer to ./go-tour-locally-setup.md .    
 
 
 ## Go's Design, History, ...
