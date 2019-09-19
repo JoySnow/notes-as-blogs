@@ -48,8 +48,8 @@ See from FAQ: https://golang.google.cn/doc/faq
 
 ### Go start time
 
-Go sketch: September 21, 2007.
-Go open source: November 10, 2009.
+Go sketch: September 21, 2007.   
+Go open source: November 10, 2009.   
 
 ### Why a new language is needed?
 
