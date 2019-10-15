@@ -8,7 +8,6 @@ Date:    2019-09-05
 <!-- code_chunk_output -->
 
 - [ An Intro of Go](#an-intro-of-go)
-  - [ * Learning Go's basic grammar](#learning-gos-basic-grammar)
   - [ Go's Design, History, ...](#gos-design-history)
     - [ Go start time](#go-start-time)
     - [ Why a new language is needed?](#why-a-new-language-is-needed)
@@ -20,6 +19,8 @@ Date:    2019-09-05
     - [ * Design](#design)
       - [ Build concurrency on the ideas of CSP](#build-concurrency-on-the-ideas-of-csp)
       - [ Why goroutines instead of threads?](#why-goroutines-instead-of-threads)
+  - [ Go's basic grammar](#gos-basic-grammar)
+    - [ tips](#tips)
   - [ Go concurrency examples](#go-concurrency-examples)
     - [ * What is concurrency?](#what-is-concurrency)
     - [ Go supports concurrency by providing ...](#go-supports-concurrency-by-providing)
@@ -33,14 +34,6 @@ Date:    2019-09-05
 # An Intro of Go
 
 https://golang.org/doc/
-
-
-## * Learning Go's basic grammar
-
-Online: https://tour.golang.org/   
-Local: http://127.0.0.1:3999/welcome/1    
-Refer to ./go-tour-locally-setup.md .    
-
 
 ## Go's Design, History, ...
 
@@ -122,6 +115,27 @@ Goroutines are part of making concurrency easy to use. The idea, which has been 
 The result, which we call goroutines, can be very cheap: they have little overhead beyond the memory for the stack, which is just a few kilobytes.
 To make the stacks small, Go's run-time uses resizable, bounded stacks.
 A newly minted goroutine is given a few kilobytes, which is almost always enough. When it isn't, the run-time grows (and shrinks) the memory for storing the stack automatically, allowing many goroutines to live in a modest amount of memory. The CPU overhead averages about three cheap instructions per function call. It is practical to create hundreds of thousands of goroutines in the same address space. If goroutines were just threads, system resources would run out at a much smaller number.
+
+
+## Go's basic grammar
+
+Online:
+ - https://tour.golang.org/   
+ - https://tour.go-zh.org/
+
+Local: http://127.0.0.1:3999/welcome/1    
+Refer to ./go-tour-locally-setup.md .    
+
+### tips
+
+- package
+- import
+- func
+- for loop
+- goroutine
+- channel
+- select
+
 
 
 ## Go concurrency examples

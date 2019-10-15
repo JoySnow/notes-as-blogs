@@ -23,7 +23,7 @@ Date:    2019-05-05
       该语言会在你第一次赋值给变量时，在内部将数据类型记录下来。  
       Python和Ruby就是一种典型的动态类型语言，  
       其他的各种脚本语言如VBScript也多少属于动态类型语言。  
-      例如PHP/ASP/Ruby/Python/Perl/ABAP/SQL/JavaScript/Unix Shell等等
+      例如 **PHP/ASP/Ruby/Python/Perl/ABAP/SQL/JavaScript/Unix Shell** 等等
 
 2. 静态类型语言：
       静态类型语言与动态类型语言刚好相反，它的数据类型是在编译期间检查的，
@@ -32,8 +32,8 @@ Date:    2019-05-05
         静态类型可以分为两种：
           如果类型是`语言语法的一部分`，是explicitly typed显式类型；
           如果类型通过`编译时推导`，是implicity typed隐式类型, 比如ML和Haske
-        显式类型的语言，程序员须指定每个变量的类型（eg. Java，C，C ++）。
-        隐式类型语言提供某种形式的类型推断，类型系统能够推导变量的类型(eg. OCaml，Haskell，Scala，Kotlin）
+        显式类型的语言，程序员须指定每个变量的类型（eg. **Java，C，C ++**）。
+        隐式类型语言提供某种形式的类型推断，类型系统能够推导变量的类型(eg. **OCaml，Haskell，Scala，Kotlin**）
 
      主要优点是编译器可以进行各种检查, 早就发现错误。
 
