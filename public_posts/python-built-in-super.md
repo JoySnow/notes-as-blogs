@@ -106,4 +106,21 @@ LoggingOD([('a', 1)]))
 """
 ```
 
+Since `LoggingOD.__mro__` , when call with `lod`,
+`super(LoggingDict, self)` 's `self` is `LoggingOD()`.    
+In `mro`, before `__main__.LoggingDict,` there are `collections.OrderedDict`, then `dict`.      
+So, `collections.OrderedDict` is called here.
+
+```
+In [51]: LoggingOD.__mro__                                                                                           
+Out[51]:
+(__main__.LoggingOD,
+ __main__.LoggingDict,
+ collections.OrderedDict,
+ dict,
+ object)
+```
+
+
+
 **Refer to https://rhettinger.wordpress.com/2011/05/26/super-considered-super/**
