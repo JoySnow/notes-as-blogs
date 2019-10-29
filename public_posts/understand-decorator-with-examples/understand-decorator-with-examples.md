@@ -1,8 +1,9 @@
 ```
 Title:   Understand-Python-Decorator-with-Examples
 Author:  Xiaoxue Wang<xxwjoy@hotmail.com>
-Versions:
+Date:
     - 2019-08-14: newly created, 2.5 hours taken
+    - 2019-10-29: add an example.
 ```
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
@@ -24,7 +25,7 @@ Versions:
   - [ What is it like: Multiple levels of decorator for a function](#what-is-it-like-multiple-levels-of-decorator-for-a-function)
   - [ What is it like: to decorate a class?](#what-is-it-like-to-decorate-a-class)
   - [ What is it like: the decorator is a class?](#what-is-it-like-the-decorator-is-a-class)
-  - [ [TOADD] What is it like: both the decorator and to decorated are classes?](#toadd-what-is-it-like-both-the-decorator-and-to-decorated-are-classes)
+  - [ What is it like: both the decorator and to decorated are classes?](#what-is-it-like-both-the-decorator-and-to-decorated-are-classes)
 
 <!-- /code_chunk_output -->
 
@@ -643,30 +644,92 @@ hello:  <function add_tag.__call__.<locals>.wrap at 0x7f664cf70840>
 """
 ```
 
-## [TOADD] What is it like: both the decorator and to decorated are classes?
+## What is it like: both the decorator and to decorated are classes?
 
 ```python
-# https://www.python.org/dev/peps/pep-0318/#examples
-# Example 5:
+class singleton(object):
+    print("Class singleton")
+
+    def __init__(self):
+        print("class singleton __init__ ...")
+        print("params: self: ", self)
 
 
-def provides(*interfaces):
-    """
-    An actual, working, implementation of provides for
-    the current implementation of PyProtocols.  Not
-    particularly important for the PEP text.
-    """
-    def provides(typ):
-        declareImplementation(typ, instancesProvide=interfaces)
-        return typ
-    return provides
+    def __call__(self, cls):
+        print("class singleton __call__ ...")
+        print("Step into singleton ...")
+        print("params: self, cls: ", self, cls)
+        instances = {}
+        def getinstance():
+            print("Step into getinstance ...")
+            if cls not in instances:
+                instances[cls] = cls()
+            print("Step out getinstance ...")
+            return instances[cls]
+        print("Step out singleton ...")
+        print("detail getinstance: ", getinstance)
+        print(getinstance.__name__, getinstance.__str__, getinstance.__repr__)
+        print(getinstance.__dict__, dir(getinstance),)
+        return getinstance
 
-class IBar(Interface):
-    """Declare something about IBar here"""
-    pass
 
-@provides(IBar)
-class Foo(object):
-    """Implement something here..."""
-    pass
+################################## NOTE: In this example,
+@singleton()                             # <-- Step-1: singletion __init__
+class MyClass(object):                   # <-- Step-2: Myclass defination
+    print("Class MyClass")               # <-- Step-3: singleton __call__ with (MyClass type)
+    print("Do you mean this class Myclass is defined first before the @singleton call? ")
+    def __init__(self):
+        print("MyClass's __init__ ...")
+    def __call__(self):
+        print("Myclass's __call__ ...")
+
+print("-------------------")
+print(MyClass)
+print("-------------------")
+mc1 = MyClass()
+print("-------------------")
+mc2 = MyClass()
+print("-------------------")
+print("mc1, mc2: ", mc1, mc2)
+print("-------------------")
+print("mc1 == mc2: ", mc1 == mc2)
+print("-------------------")
+print("calling mc2's __call__: ")
+mc2()
+print("-------------------")
+
+
+# ===========================================
+# Output:
+"""
+Class singleton
+class singleton __init__ ...
+params: self:  <__main__.singleton object at 0x7f99c43f6790>
+Class MyClass
+Do you mean this class Myclass is defined first before the @singleton call?
+class singleton __call__ ...
+Step into singleton ...
+params: self, cls:  <__main__.singleton object at 0x7f99c43f6790> <class '__main__.MyClass'>
+Step out singleton ...
+detail getinstance:  <function singleton.__call__.<locals>.getinstance at 0x7f99c43f35f0>
+getinstance <method-wrapper '__str__' of function object at 0x7f99c43f35f0> <method-wrapper '__repr__' of function object at 0x7f99c43f35f0>
+{} ['__annotations__', '__call__', '__class__', '__closure__', '__code__', '__defaults__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__get__', '__getattribute__', '__globals__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__kwdefaults__', '__le__', '__lt__', '__module__', '__name__', '__ne__', '__new__', '__qualname__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__']
+-------------------
+<function singleton.__call__.<locals>.getinstance at 0x7f99c43f35f0>
+-------------------
+Step into getinstance ...
+MyClass's __init__ ...
+Step out getinstance ...
+-------------------
+Step into getinstance ...
+Step out getinstance ...
+-------------------
+mc1, mc2:  <__main__.MyClass object at 0x7f99c43edd50> <__main__.MyClass object at 0x7f99c43edd50>
+-------------------
+mc1 == mc2:  True
+-------------------
+calling mc2's __call__:
+Myclass's __call__ ...
+-------------------
+"""
 ```
